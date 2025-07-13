@@ -1,0 +1,54 @@
+{% extends "website/base.html" %}
+
+{% block title %}Мои бронирования{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Мои бронирования</h1>
+
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input type="tel" class="form-control" name="phone" placeholder="Введите ваш телефон" value="{{ phone }}">
+        <button class="btn btn-primary" type="submit">Показать брони</button>
+    </div>
+</form>
+
+{% if bookings %}
+<div class="list-group">
+    {% for booking in bookings %}
+    <div class="list-group-item">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">Зал: {{ booking.timeslot.room.name }}</h5>
+            <span class="badge
+                {% if booking.status == 'confirmed' %}bg-success
+                {% elif booking.status == 'cancelled' %}bg-danger
+                {% else %}bg-warning text-dark{% endif %}">
+                {{ booking.get_status_display }}
+            </span>
+        </div>
+        <p class="mb-1">
+            {{ booking.timeslot.date|date:"d.m.Y" }}
+            {{ booking.timeslot.start_time|time:"H:i" }}-{{ booking.timeslot.end_time|time:"H:i" }}
+        </p>
+        <p class="mb-1">Группа: {{ booking.group_name|default:"-" }}</p>
+        <p class="mb-1">Телефон: {{ booking.phone }}</p>
+        <p class="mb-1">Цена: {{ booking.timeslot.price }} руб.</p>
+        <small>Создано: {{ booking.created_at|date:"d.m.Y H:i" }}</small>
+
+        {% if booking.status == 'pending' %}
+        <div class="mt-2">
+            <button class="btn btn-sm btn-outline-danger">Отменить бронь</button>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% elif phone %}
+<div class="alert alert-warning">
+    Бронирований по номеру {{ phone }} не найдено.
+</div>
+{% else %}
+<div class="alert alert-info">
+    Введите ваш телефон, чтобы увидеть активные бронирования.
+</div>
+{% endif %}
+{% endblock %}

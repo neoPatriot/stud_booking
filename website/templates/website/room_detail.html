@@ -1,0 +1,55 @@
+{% extends "website/base.html" %}
+
+{% block title %}{{ room.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        {% if room.photo %}
+        <img src="{{ room.photo.url }}" class="img-fluid rounded mb-4" alt="{{ room.name }}">
+        {% endif %}
+
+        <h1>{{ room.name }}</h1>
+        <h4 class="text-muted">{{ room.studio.name }}</h4>
+        <p class="mt-3">{{ room.description }}</p>
+
+        <h4>Оборудование</h4>
+        <ul>
+            {% for item, quantity in room.equipment.items %}
+            <li>{{ item }}: {{ quantity }} шт.</li>
+            {% endfor %}
+        </ul>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Информация о стоимости</h5>
+                <p class="card-text">
+                    Базовая стоимость слота: <strong>{{ room.price_per_slot }} руб.</strong><br>
+                    <small>Окончательная стоимость может отличаться для отдельных слотов</small>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h3>Доступные слоты</h3>
+        {% if available_slots %}
+        <div class="list-group">
+            {% for slot in available_slots %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <h5>{{ slot.date|date:"d.m.Y" }} {{ slot.start_time|time:"H:i" }}-{{ slot.end_time|time:"H:i" }}</h5>
+                    <p>Цена: {{ slot.price }} руб.</p>
+                </div>
+                <a href="{% url 'booking_form' slot.id %}" class="btn btn-success">Забронировать</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            На ближайшую неделю свободных слотов нет. Попробуйте выбрать другую дату.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

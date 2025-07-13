@@ -1,0 +1,45 @@
+{% extends "website/base.html" %}
+
+{% block title %}Бронирование{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2>Бронирование зала</h2>
+            </div>
+            <div class="card-body">
+                <h4>{{ timeslot.room.name }}</h4>
+                <p>{{ timeslot.date|date:"d.m.Y" }} {{ timeslot.start_time|time:"H:i" }}-{{ timeslot.end_time|time:"H:i" }}</p>
+                <p>Цена: {{ timeslot.price }} руб.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Ваше имя</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="group_name" class="form-label">Название группы (если есть)</label>
+                        <input type="text" class="form-control" id="group_name" name="group_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Телефон</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Комментарий</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Подтвердить бронирование</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "website/base.html" %}
+
+{% block title %}Наши залы{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Наши залы для репетиций</h1>
+
+<div class="row">
+    {% for room in rooms %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if room.photo %}
+            <img src="{{ room.photo.url }}" class="card-img-top" alt="{{ room.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ room.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ room.studio.name }}</h6>
+                <p class="card-text">{{ room.description|truncatechars:100 }}</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Площадь: {{ room.area }} м²</li>
+                    <li class="list-group-item">Длительность слота: {{ room.slot_duration }} мин</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'room_detail' room.id %}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

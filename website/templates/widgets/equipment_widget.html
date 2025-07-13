@@ -1,0 +1,87 @@
+<div id="equipment-widget-{{ widget.attrs.id }}">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название оборудования</th>
+                <th>Количество</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in widget.equipment_list %}
+            <tr>
+                <td>
+                    <input type="text"
+                           name="{{ widget.name }}_name"
+                           value="{{ item.name }}"
+                           class="form-control"
+                           placeholder="Микрофон, гитара и т.д.">
+                </td>
+                <td>
+                    <input type="number"
+                           name="{{ widget.name }}_quantity"
+                           value="{{ item.quantity }}"
+                           class="form-control"
+                           placeholder="1, 2, 3..."
+                           min="0">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-equipment">
+                        Удалить
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary add-equipment">
+        Добавить оборудование
+    </button>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const widget = document.querySelector('#equipment-widget-{{ widget.attrs.id }}');
+
+        // Добавление новой строки
+        widget.querySelector('.add-equipment').addEventListener('click', function() {
+            const tbody = widget.querySelector('tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <input type="text"
+                           name="{{ widget.name }}_name"
+                           class="form-control"
+                           placeholder="Микрофон, гитара и т.д.">
+                </td>
+                <td>
+                    <input type="number"
+                           name="{{ widget.name }}_quantity"
+                           class="form-control"
+                           placeholder="1, 2, 3..."
+                           min="0">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-equipment">
+                        Удалить
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+        });
+
+        // Удаление строки
+        widget.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-equipment') ||
+                e.target.closest('.remove-equipment')) {
+                const row = e.target.closest('tr');
+                if (widget.querySelectorAll('tbody tr').length > 1) {
+                    row.remove();
+                } else {
+                    row.querySelectorAll('input').forEach(input => input.value = '');
+                }
+            }
+        });
+    });
+    </script>
+</div>

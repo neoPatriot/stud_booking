@@ -1,0 +1,28 @@
+{% extends "website/base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-lg">
+    <h1 class="display-4">Добро пожаловать в нашу студию!</h1>
+    <p class="lead">Забронируйте время для репетиции в современных оборудованных залах.</p>
+    <hr class="my-4">
+    <p>Выберите зал и удобное время для вашей репетиции или записи.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'room_list' %}" role="button">Выбрать зал</a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <h2>Профессиональное оборудование</h2>
+        <p>Все залы оборудованы профессиональной аппаратурой для качественного звука.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Удобное бронирование</h2>
+        <p>Забронируйте время онлайн через сайт или Telegram-бота за несколько минут.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Доступные цены</h2>
+        <p>Гибкая система цен и скидок для постоянных клиентов и групп.</p>
+    </div>
+</div>
+{% endblock %}
