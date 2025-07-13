@@ -1,0 +1,9 @@
+python manage.py generate_timeslots --days-ahead 10
+python manage.py createsuperuser
+python manage.py runserver
+python manage.py migrate
+python manage.py makemigrations
+git commit -m "xren"
+git status
+git checkout xren
+git branch xren
