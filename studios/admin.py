@@ -1,81 +1,39 @@
-import json  # Добавьте эту строку в начало файла
-from django import forms
 from django.contrib import admin
 from .models import Studio, Room, RoomSchedule
-from .widgets import EquipmentWidget
-
-
-class RoomForm(forms.ModelForm):
-    class Meta:
-        model = Room
-        fields = '__all__'
-        help_texts = {
-            'price_per_slot': 'Базовая стоимость бронирования одного временного интервала',
-        }
-        widgets = {
-            'equipment': EquipmentWidget,
-        }
-
-
-class RoomScheduleForm(forms.ModelForm):
-    class Meta:
-        model = RoomSchedule
-        fields = '__all__'
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_time = cleaned_data.get('start_time')
-        end_time = cleaned_data.get('end_time')
-
-        if start_time and end_time and start_time >= end_time:
-            raise forms.ValidationError("Время окончания должно быть позже времени начала")
-
-        return cleaned_data
-
-
-class RoomScheduleInline(admin.TabularInline):
-    model = RoomSchedule
-    form = RoomScheduleForm
-    extra = 0
-    fields = ('day_of_week', 'start_time', 'end_time', 'is_active')
-    min_num = 1
-    verbose_name = "Расписание"
-    verbose_name_plural = "Расписания работы"
 
 
 @admin.register(Studio)
 class StudioAdmin(admin.ModelAdmin):
-    list_display = ('name', 'contact_phone', 'contact_email')
-    search_fields = ('name', 'contact_phone')
+    list_display = ('name', 'address')
+    search_fields = ('name', 'address')
 
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    form = RoomForm
-    list_display = ('name', 'studio', 'slot_duration', 'price_per_slot', 'area', 'equipment_display')
-    list_filter = ('studio',)
-    search_fields = ('name', 'description')
-    raw_id_fields = ('studio',)
-    inlines = [RoomScheduleInline]
-
-    fieldsets = [
-        ('Основная информация', {
-            'fields': ('name', 'studio', 'description', 'photo')
-        }),
-        ('Характеристики', {
-            'fields': ('area', 'slot_duration', 'price_per_slot', 'equipment'),
-            'description': 'Технические параметры зала'
-        }),
-    ]
-
-    def equipment_display(self, obj):
-        return obj.equipment_display()
-
-    equipment_display.short_description = "Оборудование"
+    list_display = ('name', 'studio', 'is_active')
+    list_filter = ('studio', 'is_active')
+    search_fields = ('name', 'studio__name')
 
 
 @admin.register(RoomSchedule)
 class RoomScheduleAdmin(admin.ModelAdmin):
-    list_display = ('room', 'day_of_week', 'start_time', 'end_time', 'is_active')
-    list_filter = ('room__studio', 'day_of_week', 'is_active')
-    raw_id_fields = ('room',)
+    list_display = ('room', 'get_day_of_week_display', 'start_time', 'end_time', 'price')
+    list_filter = ('room__studio', 'room', 'day_of_week')
+    fieldsets = (
+        (None, {
+            'fields': ('room', 'day_of_week')
+        }),
+        ('Расписание', {
+            'fields': ('start_time', 'end_time', 'slot_duration', 'price')
+        })
+    )
+
+    actions = ['generate_timeslots']
+
+    def generate_timeslots(self, request, queryset):
+        for schedule in queryset:
+            from studios.utils import generate_weekly_timeslots
+            generate_weekly_timeslots(schedule.room)
+        self.message_user(request, "Таймслоты успешно сгенерированы")
+
+    generate_timeslots.short_description = "Сгенерировать таймслоты на 4 недели"

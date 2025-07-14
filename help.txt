@@ -7,3 +7,4 @@ git commit -m "xren"
 git status
 git checkout xren
 git branch xren
+git add

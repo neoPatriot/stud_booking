@@ -2,7 +2,6 @@ from django.db import models
 from studios.models import Room
 from clients.models import Client
 
-
 class TimeSlot(models.Model):
     STATUS_CHOICES = (
         ('free', 'Свободен'),
@@ -19,14 +18,16 @@ class TimeSlot(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        verbose_name = "Таймслот"
+        verbose_name_plural = "Таймслоты"
         unique_together = ('room', 'date', 'start_time')
         indexes = [
             models.Index(fields=['room', 'date', 'status']),
         ]
+        ordering = ['date', 'start_time']
 
     def __str__(self):
         return f"{self.room} - {self.date} {self.start_time}-{self.end_time} ({self.status})"
-
 
 class Booking(models.Model):
     STATUS_CHOICES = (
@@ -44,6 +45,11 @@ class Booking(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Бронирование"
+        verbose_name_plural = "Бронирования"
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"Бронь #{self.id} ({self.timeslot})"
